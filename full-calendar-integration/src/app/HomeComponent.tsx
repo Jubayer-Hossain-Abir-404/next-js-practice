@@ -3,9 +3,30 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import React from 'react';
+import React, { useState } from 'react';
+
+interface Event {
+  title: string;
+  start?: Date | string;
+  allDay?: boolean;
+  id: number;
+}
 
 const HomeComponent = () => {
+  const [events, setEvents] = useState<Event[]>(
+    [
+      { title: 'event 1', id: 1 },
+      { title: 'event 2', id: 2 },
+      { title: 'event 3', id: 3 },
+      { title: 'event 4', id: 4 },
+      { title: 'event 5', id: 5 },
+    ]
+  );
+
+  const [allEvents, setAllEvents] = useState<Event[]>([]);
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+
   return (
     <>
       <nav className='flex justify-between mb-12 border-b border-violet-100 p-4'>
@@ -36,6 +57,13 @@ const HomeComponent = () => {
                 drop={() => {}}
                 eventClick={() => {}}
               />
+            </div>
+
+            <div id='draggable-el' className='ml-8 w-full border-2 p-2 rounded-md mt-16 lg:h-1/2 bg-violet-50'>
+                <h1 className='font-bold text-lg text-center'>Drag Event</h1>
+                {
+                  
+                }
             </div>
           </div>
         </main>
