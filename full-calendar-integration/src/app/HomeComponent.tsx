@@ -1,7 +1,7 @@
 'use client';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin, { Draggable } from '@fullcalendar/interaction';
+import interactionPlugin, { Draggable, DropArg } from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import React, { useEffect, useState } from 'react';
 
@@ -10,6 +10,11 @@ interface Event {
   start?: Date | string;
   allDay?: boolean;
   id: string;
+}
+
+type EventDateArg = {
+  date: Date;
+  allDay: boolean;
 }
 
 const HomeComponent = () => {
@@ -46,6 +51,34 @@ const HomeComponent = () => {
     }
   }, []);
 
+  const handleDateClick = (arg: EventDateArg) => {
+    console.log(arg);
+    setNewEvent({
+      ...newEvent,
+      start: arg.date,
+      allDay: arg.allDay,
+      id: new Date().getTime().toString(),
+    });
+    setShowModal(true);
+  };
+
+  const addEvent = (data: DropArg) => {
+    console.log(data);
+    const event = {
+      ...newEvent,
+      start: data.date.toISOString(),
+      title: data.draggedEl.innerText,
+      allDay: data.allDay,
+      id: new Date().getTime().toString(),
+    };
+    setAllEvents([...allEvents, event]);
+  };
+
+  const handleDeleteModal = (data: { event: { id: string } }) => {
+    setShowDeleteModal(true);
+    setIdToDelete(parseInt(data?.event?.id));
+  };
+
   return (
     <>
       <nav className='flex justify-between mb-12 border-b border-violet-100 p-4'>
@@ -72,8 +105,10 @@ const HomeComponent = () => {
                 droppable={true}
                 selectable={true}
                 selectMirror={true}
-                dateClick= {() => {}}
-                drop={() => {}}
+                dateClick= {handleDateClick}
+                drop={(data) => {
+                  addEvent(data)
+                }}
                 eventClick={() => {}}
               />
             </div>
