@@ -1,31 +1,50 @@
 'use client';
 import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
-import interactionPlugin from '@fullcalendar/interaction';
+import interactionPlugin, { Draggable } from '@fullcalendar/interaction';
 import timeGridPlugin from '@fullcalendar/timegrid';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 interface Event {
   title: string;
   start?: Date | string;
   allDay?: boolean;
-  id: number;
+  id: string;
 }
 
 const HomeComponent = () => {
   const [events, setEvents] = useState<Event[]>(
     [
-      { title: 'event 1', id: 1 },
-      { title: 'event 2', id: 2 },
-      { title: 'event 3', id: 3 },
-      { title: 'event 4', id: 4 },
-      { title: 'event 5', id: 5 },
+      { title: 'event 1', id: '1' },
+      { title: 'event 2', id: '2' },
+      { title: 'event 3', id: '3' },
+      { title: 'event 4', id: '4' },
+      { title: 'event 5', id: '5' },
     ]
   );
 
   const [allEvents, setAllEvents] = useState<Event[]>([]);
   const [showModal, setShowModal] = useState<boolean>(false);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+
+  const [idToDelete, setIdToDelete] = useState<number | null>(null);
+  const [newEvent, setNewEvent] = useState<Event>({ title: '', start: '', allDay: false, id: '0' });
+
+  useEffect(() => {
+    const draggableElement = document.getElementById('draggable-element');
+    if (draggableElement) {
+      new Draggable (draggableElement, {
+        itemSelector: '.fc-event',
+        eventData: function(eventElement) {
+          return {
+            title: eventElement.getAttribute('title'),
+            id: eventElement.getAttribute('data'),
+            start: eventElement.getAttribute('start'),
+          }
+        }
+      });
+    }
+  }, []);
 
   return (
     <>
@@ -47,7 +66,7 @@ const HomeComponent = () => {
                   center: 'title',
                   right: 'resourceTimelineWeek,dayGridMonth,timeGridWeek',
                 }}
-                events={{ }}
+                events={allEvents}
                 nowIndicator = {true}
                 editable={true}
                 droppable={true}
@@ -59,10 +78,20 @@ const HomeComponent = () => {
               />
             </div>
 
-            <div id='draggable-el' className='ml-8 w-full border-2 p-2 rounded-md mt-16 lg:h-1/2 bg-violet-50'>
+            <div id='draggable-element' className='ml-8 w-full border-2 p-2 rounded-md mt-16 lg:h-1/2 bg-violet-50'>
                 <h1 className='font-bold text-lg text-center'>Drag Event</h1>
                 {
-                  
+                  events.map((event) => {
+                    return (
+                      <div
+                        title={event.title}
+                        key={event.id}
+                        className='fc-event border-2 p-1 m-2 w-full rounded-md ml-auto text-center bg-white'
+                      >
+                        {event.title}
+                      </div>
+                    )
+                  })
                 }
             </div>
           </div>
